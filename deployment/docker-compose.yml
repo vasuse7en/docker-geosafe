@@ -85,8 +85,8 @@ services:
     links:
       - django
       - geoserver
-    ports:
-      - "80:80"
+    # ports:
+    #  - "80:80"
     network_mode: "bridge"
 
   celery:
