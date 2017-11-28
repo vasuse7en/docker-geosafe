@@ -14,11 +14,6 @@ RUN export DEBIAN_FRONTEND=noninteractive
 ENV DEBIAN_FRONTEND noninteractive
 RUN dpkg-divert --local --rename --add /sbin/initctl
 
-# Use local cached debs from host (saves your bandwidth!)
-# Change ip below to that of your apt-cacher-ng host
-# Or comment this line out if you do not wish to use caching
-ADD 71-apt-cacher-ng /etc/apt/apt.conf.d/71-apt-cacher-ng
-
 RUN apt-get -y update; apt-get -y --force-yes install pwgen git inotify-tools
 
 # This section taken on 2 July 2015 from
@@ -49,7 +44,7 @@ RUN pip install -r /REQUIREMENTS-headless.txt
 RUN pip install -r /REQUIREMENTS-realtime.txt
 # Copy ubuntu fonts
 RUN apt-get -y install wget unzip
-RUN wget -c http://font.ubuntu.com/download/ubuntu-font-family-0.83.zip
+ADD ubuntu-font-family-0.83.zip /ubuntu-font-family-0.83.zip
 RUN unzip ubuntu-font-family-0.83.zip
 RUN mv ubuntu-font-family-0.83 /usr/share/fonts/truetype/ubuntu-font-family
 CMD fc-cache -f -v
