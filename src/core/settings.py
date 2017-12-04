@@ -9,12 +9,9 @@ __author__ = 'Rizky Maulana Nugraha <lana.pcfre@gmail.com>'
 __date__ = '8/25/16'
 
 
-try:
-    # import geonode settings
-    from geonode.settings import *
-    this_settings = sys.modules[__name__]
-except ImportError:
-    pass
+# import geonode settings
+from geonode.settings import *
+this_settings = sys.modules[__name__]
 
 try:
     # if using QGIS Server, import settings
@@ -34,6 +31,16 @@ try:
         update_settings(this_settings)
 except ImportError:
     pass
+
+try:
+    # if using Fluentgrid, import settings
+    use_fluentgrid = os.environ.get('USE_FLUENTGRID', 'True')
+    use_fluentgrid = ast.literal_eval(use_fluentgrid)
+    if use_fluentgrid:
+        from core.fluentgrid import update_settings
+        update_settings(this_settings)
+except ImportError:
+    pass    
 
 # Loggers
 if DEBUG:
