@@ -1,12 +1,12 @@
 [submodule "src/geonode"]
 	path = src/geonode
-	url = https://github.com/kartoza/geonode.git
+	url = https://github.com/vasuse7en/geonode.git
 [submodule "src/geosafe"]
 	path = src/geosafe
-	url = https://github.com/kartoza/geosafe.git
+	url = https://github.com/vasuse7en/geosafe.git
 [submodule "src/inasafe"]
 	path = src/inasafe
-	url = https://github.com/inasafe/inasafe-realtime.git
+	url = https://github.com/vasuse7en/inasafe-realtime.git
 [submodule "src/otf-project"]
 	path = src/otf-project
-	url = https://github.com/kartoza/otf-project.git
+	url = https://github.com/vasuse7en/otf-project.git
