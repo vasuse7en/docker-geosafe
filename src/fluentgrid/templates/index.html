@@ -3,7 +3,7 @@
 {% load staticfiles %}
 {% load base_tags %}
 
-{% block title %} {% trans "Welcome!" %} - GeoSAFE {% endblock %}
+{% block title %} {% endblock %}
 {% block body_class %}home{% endblock %}
 
 {% block middle %}
@@ -36,30 +36,45 @@
                     </div>
                 </td>
                 <td>
-                    <p style="margin: 5px 50px; font-size: 18px;">Fluentgrid CCC is an advanced integration, visualization, incident management and SOP management platform for peace time as well as emergency response situations. CCC facilitates integration of alerts and notifications, audio and video streams from a multitude of 3rd party systems through various means and also allows remote operation of various devices on demand.
-                    </p>
+                    <ul style="margin: 5px 50px;">
+                                <li>
+                                    Disaster simulation is a web platform that provides the ability to run analyses online.
+                                </li>
+                                <li>
+                                    It provides a simple but rigorous way to combine data from scientists, local governments and communities to provide insights into the likely impacts of future disaster events.
+                                </li>
+                                <li>
+                                    This app visually analyzes an impact on a map in the event of disaster.
+                                </li>
+                                <li>
+                                    Analysis reports can also be generated and saved for future reference.
+                                </li>
+                                <li>
+                                    It produces realistic natural hazard impact scenarios for better planning, preparedness and response activities.
+                                </li>
+                    </ul>
                 </td>
             </tr>
         </table>
-        <!-- <p style="text-align: center">
+        <p style="text-align: center">
             <a href="#what-anchor" role="button" title="What can GeoSAFE do?">{% blocktrans %}<i class="fa fa-arrow-down fa-3x icon-white"></i>{% endblocktrans %}</a>
-        </p> -->
+        </p>
   	</div>
   </div>
-  <!-- {% include "_status_message.html" %}
+  {% include "_status_message.html" %}
   {% include "_announcements.html" %}
   {% include "_messages.html" %}
   <a class="anchor" id="what-anchor"></a>
   <section id="what-section" class="safe-section">
     <div class="container">
       <div class="row">
-        <h1>What can you do here?</h1>
+        <h1>What can Fluentgrid disaster simulation do?</h1>
 
           <div class="row">
               <table style="margin: 25px 0px;">
                   <tr>
                       <td>
-                          <div id='mySwipeWhat' style='max-width:640px;max-height: 480px;margin:0 auto' class="swipe-what">
+                          <div id='mySwipeWhat' style='max-width:640px;max-height: 550px;margin:0 auto' class="swipe-what">
                               <div class='swipe-what-wrap'>
                                   <div><img src="{% static 'geosafe/img/geosafe-menu.png' %}"/></div>
                                   <div><img src="{% static 'geosafe/img/analysis-list.png' %}"/></div>
@@ -72,14 +87,13 @@
                               <li>
                                   <b>Perform Analysis</b>
                                   <p>
-                                      Perform an analysis using hazard and exposure data hosted on Simulation module.
-                                      Visualize the analysis results as a map and infographic, and as downloadable PDF reports.
+                                    Perform an analysis using hazard and exposure data. Visualize the analysis results as a map and infographic, and as downloadable PDF reports.
                                   </p>
                               </li>
                               <li>
                                   <b>Analysis List</b>
                                   <p>
-                                      Browse previously run analysis results and visualize the map and report products for each analysis.
+                                    Perform an analysis using hazard and exposure data. Visualize the analysis results as a map and infographic, and as downloadable PDF reports.
                                   </p>
                               </li>
                           </ul>
@@ -92,14 +106,14 @@
           </p>
       </div>
     </div>
-  </section> -->
+  </section>
 
 
-  <!-- <a class="anchor" id="how-anchor"></a>
+  <a class="anchor" id="how-anchor"></a>
   <section id="how-section" class="safe-section">
     <div class="container">
       <div class="row">
-        <h1>How to run an Analysis?</h1>
+        <h1>How does it work?</h1>
           <div class="row">
               <table style="margin: 25px 0px;">
                   <tr>
@@ -118,7 +132,7 @@
                                   Select an exposure layer (e.g. road, structure, population)
                               </li>
                               <li>
-                                  Select a hazard layer (e.g. flood, tsunami, earthquake, volcano, and volcanic ash)
+                                  Select a hazard layer (e.g. flood, tsunami, and cyclone)
                               </li>
                               <li>
                                   Select an impact function
@@ -137,12 +151,12 @@
           </div>
       </div>
     </div>
-  </section> -->
+  </section>
 
   {% endblock %}
 
   {% block mainbody %}
-  <!-- <div class="big-search">
+  <div class="big-search">
   	<div class="container">
   		<h1>{% trans "Search for Data." %}</h1>
   		<div class="search">
@@ -157,7 +171,7 @@
   		</div>
   		<p><a class="btn btn-default btn-lg" href="/search/">Advanced Search</a></p>
   	</div>
-  </div> -->
+  </div>
 
   {% block datasets %}
   {% endblock %}

@@ -14,7 +14,7 @@
     <meta Http-Equiv="Pragma-directive: no-cache">
     <meta Http-Equiv="Cache-directive: no-cache">
 
-    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+    <title>{% block title %}Fluentgrid CCC - Disaster Simulation{% endblock %}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
           <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css?v={{ VERSION }}" rel="stylesheet" />
@@ -29,9 +29,9 @@
       <link href="{{ STATIC_URL }}geonode/css/ux-all.css?v={{ VERSION }}" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css?v={{ VERSION }}" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
-
+      <link href="{{ STATIC_URL }}css/main.css" rel="stylesheet" />
+      <link rel="icon" type ="image/png" href="{{ STATIC_URL }}img/fgFavicon.png" ></link>
       {% block extra_head %}
-      <link href="{{ STATIC_URL }}/css/main.css" rel="stylesheet" />
       {% endblock %}
     {% endblock %}
     <!--[if IE]>
@@ -56,7 +56,7 @@
 	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 	        <i class="fa fa-navicon fa-lg"></i>
 	      </button>
-	      <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+	      <a class="navbar-brand" href="{% url "home" %}">Fluentgrid</a>
 	    </div>
 	    <div id="navbar" class="navbar-collapse collapse">
 	      <ul class="nav navbar-nav toolbar">
@@ -187,7 +187,7 @@
     <div class="container">
       <div class="row">
         <div class="col-md-2">
-          <ul class="list-unstyled">
+          <!-- <ul class="list-unstyled">
             <li>Data</li>
             <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
             <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
@@ -200,19 +200,19 @@
             <li><a href="{% url "document_upload" %}">Upload Document</a></li>
             <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
             {% endif %}
-          </ul>
+          </ul> -->
         </div>
         <div class="col-md-2">
-          <ul class="list-unstyled">
+          <!-- <ul class="list-unstyled">
             <li>Maps</li>
             <li><a href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></li>
             {% if user.is_authenticated %}
             <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
-          </ul>
+          </ul> -->
         </div>
 		<div class="col-md-2">
-          <ul class="list-unstyled">
+          <!-- <ul class="list-unstyled">
             <li>About</li>
             <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
             <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
@@ -224,15 +224,16 @@
             <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
-          </ul>
+          </ul> -->
         </div>
         <div class="col-md-6 text-right">
-          <ul class="list-unstyled">
+          <small>Powered by <a href = 'https://inasafe.org/'>InaSAFE</a></small>
+          <!-- <ul class="list-unstyled">
             <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em></li>
             <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li>
-          </ul>
-          <label class="hidden">{% trans "Language" %}</label>
-          {% if csrf_token != "NOTPROVIDED" %}
+          </ul> -->
+          <!-- <label class="hidden">{% trans "Language" %}</label> -->
+          <!-- {% if csrf_token != "NOTPROVIDED" %}
           {% get_current_language as LANGUAGE %}
           <form class="form-inline" action="/i18n/setlang/" method="post">
           {% csrf_token %}
@@ -244,7 +245,7 @@
               {% endfor %}
             </select>
           </form>
-          {% endif %}
+          {% endif %} -->
         </div>
       </div>
     </div>
