@@ -17,8 +17,9 @@ ADD uwsgi.conf /uwsgi.conf
 # Clone source code
 WORKDIR /tmp
 ARG DOCKER_GEOSAFE_TAG=develop
-RUN git clone --branch ${DOCKER_GEOSAFE_TAG} --depth 1 https://github.com/kartoza/docker-geosafe.git
+RUN git clone --branch ${DOCKER_GEOSAFE_TAG} --depth 1 https://github.com/vasuse7en/docker-geosafe.git
 RUN mv /tmp/docker-geosafe/src/core /usr/src/core
+RUN mv /tmp/docker-geosafe/src/fluentgrid /usr/src/fluentgrid
 
 WORKDIR /usr/src/app
 

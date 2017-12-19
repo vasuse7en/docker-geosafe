@@ -4,6 +4,6 @@ FROM kartoza/qgis-server:LTR
 
 WORKDIR /opt/qgis-server/plugins
 ARG OTF_PROJECT_TAG=master
-RUN git clone --branch ${OTF_PROJECT_TAG} --depth 1 https://github.com/kartoza/otf-project.git
+RUN git clone --branch ${OTF_PROJECT_TAG} --depth 1 https://github.com/vasuse7en/otf-project.git
 
 WORKDIR /
