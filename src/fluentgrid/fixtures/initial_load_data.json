@@ -1,0 +1,30 @@
+[
+  {
+    "model": "fluentgrid.CCCSystem",
+    "pk": 1,
+    "fields": {
+      "name": "Fluentgrid CCC"
+    }
+  },
+  {
+    "model": "fluentgrid.CCCSystem",
+    "pk": 2,
+    "fields": {
+      "name": "IBM IOC"
+    }
+  },
+  {
+    "model": "fluentgrid.SimulationEventType",
+    "pk": 1,
+    "fields": {
+      "name": "Real-Time"
+    }
+  },
+  {
+    "model": "fluentgrid.SimulationEventType",
+    "pk": 2,
+    "fields": {
+      "name": "Hypothetical"
+    }
+  }
+]

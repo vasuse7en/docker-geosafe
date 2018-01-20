@@ -1,7 +1,7 @@
 # coding=utf-8
 import os
 
-__author__ = 'Rizky Maulana Nugraha <lana.pcfre@gmail.com>'
+__author__ = 'Vasu Babu Kandimalla <lana.pcfre@gmail.com>'
 
 
 def update_settings(settings):

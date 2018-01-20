@@ -1,0 +1,262 @@
+version: '2'
+
+services:
+
+  {% if docker_port_forward.postgis is defined %}
+
+  postgis:
+    ports:
+      # - "6543:5432"
+      {% if docker_port_forward.postgis.postgis is defined %}
+
+      - "{{ docker_port_forward.postgis.postgis }}:5432"
+
+      {% endif %}
+  {% endif %}
+
+  qgis-server:
+    image: tutum/haproxy
+    environment:
+      - BALANCE=roundrobin
+      - MODE=http
+    links:
+      - qgis-server-backend
+    network_mode: "bridge"
+    {% if docker_port_forward.qgis_server is defined %}
+
+    ports:
+      # - "9003:80"
+      {% if docker_port_forward.qgis_server.http is defined %}
+
+      - "{{ docker_port_forward.qgis_server.http }}:80"
+
+      {% endif %}
+    {% endif %}
+
+
+  qgis-server-backend:
+    image: kartoza/qgis-server:LTR
+    volumes:
+      - '../src/geonode:/usr/src/app'
+      - '../src/core:/usr/src/core'
+      - '../src/geosafe:/usr/src/geosafe'
+      - '../src/otf-project:/opt/qgis-server/plugins/otf-project'
+      - './qgis-web:/var/www'
+      - './qgis-server-log:/tmp/qgis-server'
+    environment:
+      - DEBUG={{ qgis_server.DEBUG }}
+      - QGIS_LOG_FILE={{ qgis_server.QGIS_LOG_FILE }}
+      - QGIS_SERVER_LOG_FILE={{ qgis_server.QGIS_SERVER_LOG_FILE }}
+      # Log level 0 is the lowest (catch all), 5 is the highest (only fatal error)
+      - QGIS_DEBUG={{ qgis_server.QGIS_DEBUG }}
+      - QGIS_SERVER_LOG_LEVEL={{ qgis_server.QGIS_SERVER_LOG_LEVEL }}
+      # It is important to include this environment variable
+      # QGIS-Server:LTR cgi needs it
+      - QGIS_PROJECT_FILE=
+    network_mode: "bridge"
+
+  django:
+    volumes:
+      - '../src/geosafe:/usr/src/geosafe'
+      - '../src/fluentgrid:/usr/src/fluentgrid'
+      - './inasafe/headless/output:{{ django.GEOSAFE_IMPACT_OUTPUT_DIRECTORY }}'
+      - '../src/otf-project:/opt/qgis-server/plugins'
+      - './pycharm_helpers/django:/root/.pycharm_helpers'
+    environment:
+      - DEBUG={{ django.DEBUG }}
+      - ALLOWED_HOSTS={{ django.ALLOWED_HOSTS }}
+      - SITEURL={{ django.SITEURL }}
+      - OGC_BACKEND=geonode.{{ ogc_backend }}
+      - GEONODE_BASE_URL={{ django.GEONODE_BASE_URL }}
+      - QGIS_SERVER_URL={{ django.QGIS_SERVER_URL }}
+      - USE_GEOSAFE={{ use_geosafe }}
+      - USE_FLUENTGRID={{ use_fluentgrid }}
+      - USE_LAYER_FILE_ACCESS={{ django.USE_LAYER_FILE_ACCESS }}
+      - INASAFE_LAYER_DIRECTORY={{ django.INASAFE_LAYER_DIRECTORY }}
+      - INASAFE_LAYER_DIRECTORY_BASE_PATH={{ django.INASAFE_LAYER_DIRECTORY_BASE_PATH }}
+      - GEOSAFE_IMPACT_OUTPUT_DIRECTORY={{ django.GEOSAFE_IMPACT_OUTPUT_DIRECTORY }}
+      - INASAFE_IMPACT_BASE_URL={{ django.INASAFE_IMPACT_BASE_URL }}
+      - USE_LAYER_HTTP_ACCESS={{ django.USE_LAYER_HTTP_ACCESS }}
+      - INASAFE_ANALYSIS_RUN_TIME_LIMIT={{ django.INASAFE_ANALYSIS_RUN_TIME_LIMIT }}
+      - INASAFE_ANALYSIS_AREA_LIMIT={{ django.INASAFE_ANALYSIS_AREA_LIMIT }}
+    {% if django.command is defined %}
+
+    command: {{ django.command }}
+
+    {% endif %}
+    {% if docker_port_forward.django is defined %}
+
+    ports:
+      # - "9000:22"
+      {% if docker_port_forward.django.ssh is defined %}
+
+      - "{{ docker_port_forward.django.ssh }}:22"
+
+      {% endif %}
+    {% endif %}
+
+    links:
+      - qgis-server
+      - inasafe-output
+
+  {% if docker_port_forward.web is defined %}
+
+  web:
+
+    {% if web.command is defined %}
+
+    command: {{ web.command }}
+
+    {% endif %}
+
+    ports:
+      # - "80:80"
+      {% if docker_port_forward.web.http is defined %}
+
+      - "{{ docker_port_forward.web.http }}:80"
+
+      {% endif %}
+  {% endif %}
+
+  celery:
+    volumes:
+      - '../src/geosafe:/usr/src/geosafe'
+      - '../src/fluentgrid:/usr/src/fluentgrid'
+      - './inasafe/headless/output:{{ django.GEOSAFE_IMPACT_OUTPUT_DIRECTORY }}'
+      - './pycharm_helpers/celery:/root/.pycharm_helpers'
+    environment:
+      - DEBUG={{ django.DEBUG }}
+      - ALLOWED_HOSTS={{ django.ALLOWED_HOSTS }}
+      - SITEURL={{ django.SITEURL }}
+      - OGC_BACKEND=geonode.{{ ogc_backend }}
+      - GEONODE_BASE_URL={{ django.GEONODE_BASE_URL }}
+      - QGIS_SERVER_URL={{ django.QGIS_SERVER_URL }}
+      - USE_GEOSAFE={{ use_geosafe }}
+      - USE_FLUENTGRID={{ use_fluentgrid }}
+      - USE_LAYER_FILE_ACCESS={{ django.USE_LAYER_FILE_ACCESS }}
+      - INASAFE_LAYER_DIRECTORY={{ django.INASAFE_LAYER_DIRECTORY }}
+      - INASAFE_LAYER_DIRECTORY_BASE_PATH={{ django.INASAFE_LAYER_DIRECTORY_BASE_PATH }}
+      - GEOSAFE_IMPACT_OUTPUT_DIRECTORY={{ django.GEOSAFE_IMPACT_OUTPUT_DIRECTORY }}
+      - INASAFE_IMPACT_BASE_URL={{ django.INASAFE_IMPACT_BASE_URL }}
+      - USE_LAYER_HTTP_ACCESS={{ django.USE_LAYER_HTTP_ACCESS }}
+      - INASAFE_ANALYSIS_RUN_TIME_LIMIT={{ django.INASAFE_ANALYSIS_RUN_TIME_LIMIT }}
+      - INASAFE_ANALYSIS_AREA_LIMIT={{ django.INASAFE_ANALYSIS_AREA_LIMIT }}
+    {% if celery.command is defined %}
+
+    command: {{ celery.command }}
+
+    {% endif %}
+    {% if docker_port_forward.celery is defined %}
+
+    ports:
+      # - "9001:22"
+      {% if docker_port_forward.celery.ssh is defined %}
+      - "{{ docker_port_forward.celery.ssh }}:22"
+      {% endif %}
+    {% endif %}
+
+    links:
+      - qgis-server
+      - inasafe-output
+
+  inasafe-output:
+    image: nginx
+    volumes:
+      - ./inasafe/headless/output:/usr/share/nginx/html/output
+    ports:
+      - "8081:80"
+    network_mode: "bridge"
+
+  inasafe-headless:
+    build: docker-inasafe-headless
+    restart: on-failure
+    working_dir: /home/src/inasafe
+    environment:
+      - C_FORCE_ROOT=True
+      - PYTHONPATH=/home/src/inasafe
+      - InaSAFEQGIS=/home/src/inasafe
+      - DISPLAY=:99
+      - INASAFE_HEADLESS_BROKER_HOST=amqp://guest:guest@rabbitmq:5672/
+      - INASAFE_HEADLESS_DEPLOY_OUTPUT_DIR={{ inasafe_headless.INASAFE_HEADLESS_DEPLOY_OUTPUT_DIR }}
+      - INASAFE_HEADLESS_DEPLOY_OUTPUT_URL={{ inasafe_headless.INASAFE_HEADLESS_DEPLOY_OUTPUT_URL }}
+      - QGIS_LOG_FILE={{ inasafe_headless.QGIS_LOG_FILE }}
+      - QGIS_DEBUG_FILE={{ inasafe_headless.QGIS_DEBUG_FILE }}
+      - QGIS_DEBUG={{ inasafe_headless.QGIS_DEBUG }}
+      - INASAFE_WORK_DIR={{ inasafe_headless.INASAFE_WORK_DIR }}
+    volumes:
+      - '../src/inasafe:/home/src/inasafe'
+      - './inasafe/headless/output:/home/output'
+      - '../src/geonode/geonode/uploaded:{{ django.INASAFE_LAYER_DIRECTORY }}'
+      - './pycharm_helpers/inasafe-headless:/root/.pycharm_helpers'
+    {% if inasafe_headless.command is defined %}
+
+    command: {{ inasafe_headless.command }}
+
+    {% else %}
+
+    command: /start-celery.sh prod inasafe-headless
+
+    {% endif %}
+    {% if docker_port_forward.inasafe_headless is defined %}
+
+    ports:
+      # - "9002:22"
+      {% if docker_port_forward.inasafe_headless.ssh is defined %}
+
+      - "{{ docker_port_forward.inasafe_headless.ssh }}:22"
+
+      {% endif %}
+    {% endif %}
+
+    links:
+      - rabbitmq:rabbitmq
+      - web:web
+      - django:django
+    network_mode: "bridge"
+
+  inasafe-headless-analysis:
+    build: docker-inasafe-headless
+    restart: on-failure
+    working_dir: /home/src/inasafe
+    environment:
+      - C_FORCE_ROOT=True
+      - PYTHONPATH=/home/src/inasafe
+      - InaSAFEQGIS=/home/src/inasafe
+      - DISPLAY=:99
+      - INASAFE_HEADLESS_BROKER_HOST=amqp://guest:guest@rabbitmq:5672/
+      - INASAFE_HEADLESS_DEPLOY_OUTPUT_DIR={{ inasafe_headless_analysis.INASAFE_HEADLESS_DEPLOY_OUTPUT_DIR }}
+      - INASAFE_HEADLESS_DEPLOY_OUTPUT_URL={{ inasafe_headless_analysis.INASAFE_HEADLESS_DEPLOY_OUTPUT_URL }}
+      - QGIS_LOG_FILE={{ inasafe_headless_analysis.QGIS_LOG_FILE }}
+      - QGIS_DEBUG_FILE={{ inasafe_headless_analysis.QGIS_DEBUG_FILE }}
+      - QGIS_DEBUG={{ inasafe_headless_analysis.QGIS_DEBUG }}
+      - INASAFE_WORK_DIR={{ inasafe_headless_analysis.INASAFE_WORK_DIR }}
+    volumes:
+      - '../src/inasafe:/home/src/inasafe'
+      - './inasafe/headless/output:/home/output'
+      - '../src/geonode/geonode/uploaded:{{ django.INASAFE_LAYER_DIRECTORY }}'
+      - './pycharm_helpers/inasafe-headless-analysis:/root/.pycharm_helpers'
+    {% if inasafe_headless_analysis.command is defined %}
+
+    command: {{ inasafe_headless_analysis.command }}
+
+    {% else %}
+
+    command: /start-celery.sh prod inasafe-headless-analysis
+
+    {% endif %}
+    {% if docker_port_forward.inasafe_headless_analysis is defined %}
+
+    ports:
+      # - "9002:22"
+      {% if docker_port_forward.inasafe_headless_analysis.ssh is defined %}
+
+      - "{{ docker_port_forward.inasafe_headless_analysis.ssh }}:22"
+
+      {% endif %}
+    {% endif %}
+
+    links:
+      - rabbitmq:rabbitmq
+      - web:web
+      - django:django
+    network_mode: "bridge"

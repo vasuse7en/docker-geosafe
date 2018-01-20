@@ -14,5 +14,9 @@ if 'geosafe' in settings.INSTALLED_APPS:
     pattern_lists.append(
         (r'^geosafe/', include('geosafe.urls', namespace="geosafe")))
 
+if 'fluentgrid' in settings.INSTALLED_APPS:
+    pattern_lists.append(
+        (r'^fluentgrid/', include('fluentgrid.urls', namespace="fluentgrid")))
+
 if pattern_lists:
     urlpatterns += patterns(*pattern_lists)

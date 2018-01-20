@@ -10,4 +10,5 @@
     - { src: docker-compose.override.geoserver.yml, match: '{{ ogc_backend == "geoserver" }}'}
     - { src: docker-compose.override.qgis.yml, match: '{{ ogc_backend == "qgis_server" }}'}
     - { src: docker-compose.override.geosafe.yml, match: '{{ use_geosafe }}'}
+    - { src: docker-compose.override.fluentgrid.yml, match: '{{ use_geosafe }}'}
   when: item.match

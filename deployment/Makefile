@@ -40,6 +40,7 @@ production-scale:
 
 sync: up
 	@docker-compose -p $(PROJECT_ID) exec django django-admin.py makemigrations --noinput --merge
+	@docker-compose -p $(PROJECT_ID) exec django django-admin.py loaddata initial_load_data.json
 	@docker-compose -p $(PROJECT_ID) exec django paver sync
 
 collectstatic: up
