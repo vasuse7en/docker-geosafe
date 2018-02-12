@@ -1,8 +1,182 @@
-<html>
-<head>
+{% load bootstrap_tags %}
+{% load i18n avatar_tags %}
+{% load staticfiles %}
+{% block body %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#send-event").submit(function (event) {
+                $.ajax({
+                    type: "POST",
+                    url: "/fluentgrid/analysis/send-event/",
+                    data: {
+                        'type': $("#sel1 option:selected").text(),
+                        'system': $("#sel2 option:selected").text(),
+                        'certainty': $("#sel3 option:selected").text(),
+                        'urgency': $("#sel4 option:selected").text(),
+                        'event_description': $("#eventDesc").val(),
+                        'analysis_id': {{ analysis_id }}  // from form
+                    },
 
-</head>
-<body>
-wewefwef
-</body>
-</html>
+                    success: function (response) {
+                        console.log('success');
+
+                        success_response = response.text
+
+                        $('#send-event-modal').modal('hide')
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'fluentgrid:update_event_context' %}",
+                            data: {
+                                'analysis_id': {{ analysis_id }},
+                                'response': success_response// from form
+                            },
+                            success: function (data) {
+                                $("#success-modal").replaceWith(data);
+                                $("#success-modal").modal();
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                $('#send-event-modal').modal('hide')
+                            }
+                        });
+                    },
+                    error: function (error) {
+                        var error_response
+                        if (error.responseJSON) {
+                            error_response = error.responseJSON["response"]
+                        } else {
+                            error_response = error.responseText
+                        }
+
+                        $('#send-event-modal').modal('hide')
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'fluentgrid:update_event_context' %}",
+                            data: {
+                                'analysis_id': {{ analysis_id }},
+                                'response': error_response// from form
+                            },
+                            success: function (data) {
+                                $("#failure-modal").replaceWith(data);
+                                $("#failure-modal").modal();
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                $('#send-event-modal').modal('hide')
+                            }
+                        });
+                    }
+                });
+                return false; //<---- move it here
+            });
+
+        });
+    </script>
+    <div class="modal fade" id="send-event-modal" tabindex="-1" role="dialog" aria-labelledby="Impact">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method='post' id="send-event">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title text-primary">Send Event</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-left">Select following fields to send desired event.</div>
+                        <br/>
+                        <div class="form-group">
+                            <label> Event type* </label>
+                            <select class="form-control" id="sel1" required>
+                                <option value="" selected disabled>Choose event type</option>
+                                {% for event_type in event_types %}
+                                    <option>{{ event_type.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <br/>
+                            <label> CCC/System* </label>
+                            <select class="form-control" id="sel2" required>
+                                <option value="" selected disabled>Choose CCC/System</option>
+                                {% for ccc_system in ccc_systems %}
+                                    <option>{{ ccc_system.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <br/>
+                            <label> Certainty* </label>
+                            <select class="form-control" id="sel3" required>
+                                <option value="" selected disabled>Define Certainty</option>
+                                {% for certainity in certainty_members %}
+                                    <option>{{ certainity }}</option>
+                                {% endfor %}
+                            </select>
+                            <br/>
+                            <label> Urgency* </label>
+                            <select class="form-control" id="sel4" required>
+                                {{ certainty_members }}
+                                <option value="" selected disabled>Define Urgency</option>
+                                {% for urgency in urgency_members %}
+                                    <option>{{ urgency }}</option>
+                                {% endfor %}
+                            </select>
+                            <br/>
+                            <label> Event Description </label>
+
+                            <textarea class="form-control" id="eventDesc" rows="3"
+                                      placeholder="Describe about the Analysis and why you are sending event"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p class="text-primary pull-left">
+                            <small class="ng-binding">* Required Fields</small>
+                        </p>
+                        <button type="button" data-dismiss="modal" class="btn btn-default">
+                            Cancel
+                        </button>
+                        <input id="post-event" type="submit" class="btn btn-primary pull-right"
+                               value="send-event"></input>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="success-modal" tabindex="-1" role="dialog" aria-labelledby="Impact">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Send Event</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-success">
+                        <strong>Success!</strong> {{ Message }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" data-dismiss="modal" class="btn btn-default">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="failure-modal" tabindex="-1" role="dialog" aria-labelledby="Impact">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Send Event</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <strong>Failed!</strong> {{ Message }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" data-dismiss="modal" class="btn btn-default">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

@@ -1,14 +1,12 @@
 import logging
 import json
-import datetime
-import requests
-from django.http.response import HttpResponse
-from geosafe.models import Analysis
-from geonode.layers.models import Layer
+from django.http.response import HttpResponse, HttpResponseServerError
+from geosafe.models import Analysis, Metadata
+from fluentgrid.types.Constants import Certainty, Urgency
 from fluentgrid.models import SimulationEventDetails, SimulationEventType, CCCSystem
-from fluentgrid.types.Constants import Certainty, Constant, Urgency
-# from fluentgrid.integration.event.EventgeneratorFactory import EventFactory
-# from fluentgrid.integration.event.Event import BaseEvent
+from fluentgrid.integration.integration import get_system
+from django.shortcuts import render
+
 LOGGER = logging.getLogger("geosafe")
 
 logger = logging.getLogger("geonode.geosafe.analysis")
@@ -21,63 +19,64 @@ def send_event(request):
         analysis = Analysis.objects.get(id=analysis_id)
         event_type = request.POST.get("type", "")
         system = request.POST.get("system", "")
+        urgency = request.POST.get("urgency", "")
+        certainty = request.POST.get("certainty", "")
+        # hazard_category = Metadata.objects.filter(layer_id = analysis.hazard_layer.id).category
+
+
+        # category  = hazard_category.category
+        event_description = request.POST.get("event_description", "")
         simulation_event_type = SimulationEventType.objects.filter(name=event_type)
         ccc_system = CCCSystem.objects.filter(name=system)
 
         detail = SimulationEventDetails(analysis=analysis, simulation_event_type=simulation_event_type[0],
-                                        ccc_system=ccc_system[0], event_status='NEW')
+                                        ccc_system=ccc_system[0], event_status='NEW',
+                                        event_description=event_description, urgency=urgency, certainty=certainty)
         detail.save()
-        # id = detail.id
-        # BaseEvent = EventFactory.getEventgenerator(detail.ccc_system)
-        # BaseEvent.generate();
+        system_factory = get_system(system)
+        response = system_factory.send_event(detail, request)
+        if response.status_code == 200:
+            # TODO and response.text == 'success', HANDLE ERRORS IN SUCCESS RESPONSE
+            return HttpResponse(json.dumps({
+                'success': True,
+                'text': "Event sent to respective CCC/System"
+            }), content_type='application/json')
+        else:
+            raise ValueError(response.text)
 
-
-
-        lat_lon = detail.analysis.user_extent.split(",")
-        lon = (float(lat_lon[0]) + float(lat_lon[2])) / 2
-        lat = (float(lat_lon[1]) + float(lat_lon[3])) / 2
-        alert_name = Layer.objects.get(id=detail.analysis.impact_layer_id).title
-        data = {}
-        data['apikey'] = Constant.FG_CCC_REST_END_POINT
-        data['Source'] = 'Fluentgrid Disaster Simulation'
-        data['DeviceName'] = 'Disaster Simulation module'
-        data['AlertName'] = alert_name
-        # data['Description'] = detail.analysis.description TODO
-        data['RaisedOn'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        data['Latitude'] = lat
-        data['Longitude'] = lon
-        # data['Location'] = TODO
-        # data['MessageId'] = detail.id TODO
-        # data['SenderId'] = detail.id TODO
-        # data['SenderName'] = detail.id TODO
-        # data['Urgency'] = detail.id TODO
-        # data['Certainty'] = detail.id TODO
-        # data['Contact'] = detail.id TODO
-        # data['ResourceDesc'] = detail.id TODO
-        # data['MimeType'] = detail.id TODO
-        # data['Size'] = detail.id TODO
-        # data['Uri'] = detail.id TODO
-        # data['DerefUri'] = detail.id TODO
-        # data['Polygon'] = detail.id TODO
-        # data['Geocode'] = detail.id TODO
-
-        json_data = json.dumps(data)
-
-        # response = requests.post("https://10.10.39.113:8443/apiman-gateway/Fluentgrid/SimulationAPI/1.0", data=json_data,
-        #                          auth=('VizagUser', 'vizAg@123'))
-
-        # headers = {'content-type': 'application/json'}
-        url = Constant.FG_CCC_REST_END_POINT
-        params = {'apikey': Constant.FG_CCC_REST_END_POINT_API_KEY}
-        response = requests.post(url, params=params, data=json_data,
-                                 auth=(Constant.FG_CCC_REST_END_POINT_USER, Constant.FG_CCC_REST_END_POINT_PASS))
-        print(response)
-
-        return HttpResponse(json.dumps({
-            'success': True
-        }), content_type='application/json')
     except Exception as e:
         LOGGER.exception(e)
-        return HttpResponse(json.dumps({
-            'success': False
+        return HttpResponseServerError(json.dumps({
+            'success': False,
+            'response': e.message
         }), content_type='application/json')
+
+
+def event_view(request, pk):
+    event_types = SimulationEventType.objects.all()
+    ccc_systems = CCCSystem.objects.all()
+    certainty = Certainty()
+    urgency = Urgency()
+    certainty_members = [attr for attr in dir(certainty) if
+                         not callable(getattr(certainty, attr)) and not attr.startswith("__")]
+    urgency_members = [attr for attr in dir(urgency) if
+                       not callable(getattr(urgency, attr)) and not attr.startswith("__")]
+    ctx = {'event_types': event_types,
+           'ccc_systems': ccc_systems,
+           'analysis_id': pk,
+           'certainty_members': certainty_members,
+           'urgency_members': urgency_members,
+           'success': False}
+    template = 'send_event.html'
+    return render(request, template, ctx)
+
+
+def update_event_context(request):
+    analysis_id = request.POST.get("analysis_id", "")
+    response = request.POST.get("response", "")
+    ctx = {
+        'analysis_id': analysis_id,
+        'Message': response
+    }
+    template = 'send_event.html'
+    return render(request, template, ctx)

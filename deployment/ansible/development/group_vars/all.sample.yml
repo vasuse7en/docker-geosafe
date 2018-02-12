@@ -7,6 +7,7 @@ ogc_backend: qgis_server
 # set to True or False to include geosafe in the orchestration
 use_geosafe: True
 
+use_fluentgrid: True
 # put your linux/mac user here
 remote_user: user
 # put your linux/mac group here

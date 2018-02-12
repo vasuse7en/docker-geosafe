@@ -12,6 +12,9 @@ class SimulationEventType(models.Model):
         default=''
     )
 
+    def __str__(self):
+        return '%s' % self.name
+
 
 class CCCSystem(models.Model):
     name = models.CharField(
@@ -21,6 +24,9 @@ class CCCSystem(models.Model):
         null=True,
         default=''
     )
+
+    def __str__(self):
+        return '%s' % self.name
 
 
 class SimulationEventDetails(models.Model):
@@ -39,6 +45,26 @@ class SimulationEventDetails(models.Model):
     event_status = models.CharField(
         verbose_name='Status of Event',
         max_length=30,
+        blank=True,
+        null=True,
+        default=''
+    )
+    certainty = models.CharField(
+        verbose_name='Defined Certainty',
+        max_length=30,
+        blank=True,
+        null=True,
+        default=''
+    )
+    urgency = models.CharField(
+        verbose_name='Defined Urgency',
+        max_length=30,
+        blank=True,
+        null=True,
+        default=''
+    )
+    event_description = models.TextField(
+        verbose_name='Description about the event',
         blank=True,
         null=True,
         default=''
