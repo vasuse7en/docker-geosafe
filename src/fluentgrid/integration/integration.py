@@ -39,10 +39,9 @@ class FluentgridCCC:
             data = {}
             hazard_category = Metadata.objects.get(layer_id=detail.analysis.hazard_layer.id).category
             exposure_category = Metadata.objects.get(layer_id=detail.analysis.exposure_layer.id).category
-            data['Source'] = 'Disaster Simulation   '
-            data['DeviceName'] = 'Fluentgrid ERM'
-            data['AlertName'] = "Simulation Analysis - " + \
-                                hazard_category.capitalize() + " on " + exposure_category.capitalize()
+            data['Source'] = 'DISSIM'
+            # data['DeviceName'] = 'Fluentgrid ERM'
+            data['AlertName'] = hazard_category.capitalize() + " Alert"
             data['Description'] = detail.event_description
             data['RaisedOn'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             data['Latitude'] = lat
@@ -79,6 +78,7 @@ class FluentgridCCC:
             url = Constant.FG_CCC_REST_END_POINT
             access_token = self.get_access_token()
             access_token = unicodedata.normalize('NFKD', access_token).encode('ascii', 'ignore')
+            print access_token
             params = {'apikey': Constant.FG_CCC_REST_END_POINT_API_KEY}
             response = requests.post(url,
                                      params=params, headers={'Authorization': 'bearer %s' % access_token},
@@ -89,17 +89,21 @@ class FluentgridCCC:
 
     def get_access_token(self):
         url = Constant.FG_CCC_SSO_END_POINT
-        password = Constant.FG_CCC_REST_END_POINT_PASS
-        user = Constant.FG_CCC_REST_END_POINT_USER
+        password = Constant.FG_CCC_SSO_END_POINT_PASS
+        user = Constant.FG_CCC_SSO_END_POINT_USER
 
         data = {'username': user, 'password': password, 'grant_type': 'password', 'client_id': 'Simulation'}
         response = requests.post(url, data=data, verify=False)
         result = ""
-        if response.status_code == '200':
+        if response.status_code == 200:
             json_data = json.loads(response.text)
             result = json_data['access_token']
         elif response.status_code == 404:
             raise ValueError("The CCC/System you chose is not running at the moment")
+        elif response.status_code == 401:
+            raise ValueError("Unauthorized")
+        else:
+            raise ValueError("Cannot authenticate with CCC")
         return result
 
 

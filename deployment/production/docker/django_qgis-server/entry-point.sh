@@ -3,8 +3,8 @@
 # Run database migrations
 echo "Run database migrations"
 ./manage.py makemigrations --noinput --merge
-./manage.py loaddata initial_load_data.json
 paver sync
+./manage.py loaddata initial_load_data.json
 
 # Run collectstatic
 echo "Run collectstatic"

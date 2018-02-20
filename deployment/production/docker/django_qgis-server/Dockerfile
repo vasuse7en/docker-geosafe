@@ -1,5 +1,5 @@
-ARG GEONODE_DJANGO_BASE_TAG=latest
-FROM kartoza/geonode_django_base:${GEONODE_DJANGO_BASE_TAG}
+ARG GEONODE_DJANGO_BASE_TAG=qgis-server-2.7-stable-1.0
+FROM vasuse7en/geonode_django_base:${GEONODE_DJANGO_BASE_TAG}
 
 # Toolbox
 RUN apt-get -y update; apt-get -y install git python-pip python-virtualenv
@@ -25,10 +25,10 @@ WORKDIR /usr/src/app
 
 # Upgrade dependencies
 RUN apt-get update -y; apt-get install -y gdal-bin
-ADD uninstall.txt /uninstall.txt
-RUN pip uninstall -y -r /uninstall.txt
-ADD REQUIREMENTS.txt /REQUIREMENTS.txt
-RUN pip install --upgrade -r /REQUIREMENTS.txt
+#ADD uninstall.txt /uninstall.txt
+#RUN pip uninstall -y -r /uninstall.txt
+#ADD REQUIREMENTS.txt /REQUIREMENTS.txt
+#RUN pip install --upgrade -r /REQUIREMENTS.txt
 ADD entry-point.sh /entry-point.sh
 RUN chmod +x /entry-point.sh
 

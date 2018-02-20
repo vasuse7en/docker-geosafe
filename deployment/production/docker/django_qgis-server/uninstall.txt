@@ -1,4 +1,3 @@
 # This file is intended to uninstall unwanted packages that is interfering with geonode requirements.
-django-celery
 django-user-accounts
 geonode-user-accounts

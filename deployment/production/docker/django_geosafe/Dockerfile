@@ -1,4 +1,4 @@
-ARG GEONODE_DJANGO_QGIS_SERVER_TAG=latest
+ARG GEONODE_DJANGO_QGIS_SERVER_TAG=integration
 FROM vasuse7en/geonode_django_qgis-server:${GEONODE_DJANGO_QGIS_SERVER_TAG}
 
 # Clone source code

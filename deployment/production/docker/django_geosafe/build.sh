@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 IMAGE_NAME=geonode_django_geosafe
-TAG_NAME=latest
-docker build -t vasuse7en/${IMAGE_NAME} .
-docker tag vasuse7en/${IMAGE_NAME}:latest vasuse7en/${IMAGE_NAME}:${TAG_NAME}
+TAG_NAME=integration
+docker build -t vasuse7en/${IMAGE_NAME}:integration .
 docker push vasuse7en/${IMAGE_NAME}:${TAG_NAME}

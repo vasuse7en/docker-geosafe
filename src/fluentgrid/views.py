@@ -23,7 +23,6 @@ def send_event(request):
         certainty = request.POST.get("certainty", "")
         # hazard_category = Metadata.objects.filter(layer_id = analysis.hazard_layer.id).category
 
-
         # category  = hazard_category.category
         event_description = request.POST.get("event_description", "")
         simulation_event_type = SimulationEventType.objects.filter(name=event_type)
@@ -43,12 +42,12 @@ def send_event(request):
             }), content_type='application/json')
         else:
             raise ValueError(response.text)
-
+        # TODO send e.message if it is json serializable only
     except Exception as e:
         LOGGER.exception(e)
         return HttpResponseServerError(json.dumps({
             'success': False,
-            'response': e.message
+            'response': "Event sending falied"
         }), content_type='application/json')
 
 
