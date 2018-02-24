@@ -1,5 +1,5 @@
 class Constant:
-    FG_CCC_REST_END_POINT = 'https://117.254.94.62:8443/apiman-gateway/Fluentgrid/ALERTSAPI/1.0'
+    FG_CCC_REST_END_POINT = 'https://coc.gvsccl.com:8443/apiman-gateway/FLUENTGRID/ALERTS/1.0'
     FG_CCC_REST_END_POINT_USER = 'VizagUser'
     FG_CCC_REST_END_POINT_PASS = 'vizAg@123'
     FG_CCC_REST_END_POINT_API_KEY = '01859ba2-8535-4402-aeb0-978f089f1060'
