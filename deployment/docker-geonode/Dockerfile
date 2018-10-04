@@ -1,7 +1,4 @@
-FROM geonode/geonode:geonode
-
-# Toolbox
-RUN apt-get -y update; apt-get -y --force-yes install git python-pip python-virtualenv
+FROM kartoza/geonode_django_base:latest
 
 # This section taken on 2 July 2015 from
 # https://docs.docker.com/examples/running_ssh_service/
@@ -9,7 +6,10 @@ RUN apt-get -y update; apt-get -y --force-yes install git python-pip python-virt
 RUN apt-get update -y; apt-get install -y --force-yes openssh-server sudo
 RUN mkdir -p /var/run/sshd
 RUN echo 'root:docker' | chpasswd
-RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+# Comment out PermitRootLogin setting, whatever it is
+RUN sed -i 's/^PermitRootLogin */#PermitRootLogin /' /etc/ssh/sshd_config
+# Write out PermitRootLogin setting at the end
+RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
 
 # SSH login fix. Otherwise user is kicked off after login
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
@@ -19,28 +19,13 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 
 # End of cut & paste section
 
-# include uwsgi and production ready
-RUN apt-get update -y; apt-get -y --force-yes install \
-	python-gdal \
-	python-geoip \
-	npm \
-	nodejs \
-	rpl
-RUN npm -g install yuglify
-RUN rpl "env node" "env nodejs" /usr/local/lib/node_modules/yuglify/bin/yuglify
-
-# Upgrade dependencies
-RUN apt-get update -y; apt-get install -y --force-yes gdal-bin
-ADD uninstall.txt /uninstall.txt
-RUN pip uninstall -y -r /uninstall.txt
-ADD REQUIREMENTS.txt /REQUIREMENTS.txt
-RUN pip install --upgrade -r /REQUIREMENTS.txt
-
 # Entrypoint related
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 ADD uwsgi.conf /uwsgi.conf
+ADD wait-for-databases /usr/bin/wait-for-databases
+ADD requirements.txt /requirements.txt
+ADD sitecustomize.py /usr/local/lib/python2.7/site-packages/sitecustomize.py
+RUN pip install -r /requirements.txt
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["prod"]
-
-# GeoSAFE Related
-ADD geosafe-tasks-headless-celeryconfig.py /celeryconfig.py

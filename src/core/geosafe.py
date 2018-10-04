@@ -18,9 +18,6 @@ def update_settings(settings):
     template_dirs.insert(0, '/usr/src/geosafe/templates')
 
     settings.TEMPLATES[0]['DIRS'] = template_dirs
-    settings.STATICFILES_DIRS += (
-        '/usr/src/geosafe/static',
-    )
 
     # Geosafe settings
     # App specific
@@ -32,8 +29,8 @@ def update_settings(settings):
 
     # Specific celery settings. Can be modified accordingly or leave as
     # default
-    settings.CELERY_ALWAYS_EAGER = literal_eval(os.environ.get(
-        'CELERY_ALWAYS_EAGER', 'False'))
+    settings.CELERY_TASK_ALWAYS_EAGER = literal_eval(os.environ.get(
+        'CELERY_TASK_ALWAYS_EAGER', 'False'))
     settings.CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
     settings.CELERY_IGNORE_RESULT = False
     settings.CELERY_SEND_EVENTS = True
@@ -82,7 +79,7 @@ def update_settings(settings):
         'INASAFE_LAYER_DIRECTORY', '/home/geosafe/media/')
 
     settings.INASAFE_LAYER_DIRECTORY_BASE_PATH = os.environ.get(
-        'INASAFE_LAYER_DIRECTORY_BASE_PATH', '/usr/src/app/geonode/uploaded/')
+        'INASAFE_LAYER_DIRECTORY_BASE_PATH', '/usr/src/app/geonode/qgis_layer/')
 
     settings.GEOSAFE_IMPACT_OUTPUT_DIRECTORY = os.environ.get(
         'GEOSAFE_IMPACT_OUTPUT_DIRECTORY', '/home/geosafe/impact_layers/')

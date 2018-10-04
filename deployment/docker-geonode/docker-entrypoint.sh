@@ -1,12 +1,32 @@
 #!/usr/bin/env bash
 
-# GeoSAFE Related
-if [ -d /usr/src/geosafe/tasks/headless/ ]; then
-	echo "Copy celeryconfig for Geosafe if not exists"
-	cp -n /celeryconfig.py /usr/src/geosafe/tasks/headless/celeryconfig.py
-fi
+set -e
 
 echo "Number of arguments $#"
+
+/usr/local/bin/invoke update >> /usr/src/app/invoke.log
+
+source $HOME/.override_env
+
+echo DATABASE_URL=$DATABASE_URL
+echo GEODATABASE_URL=$GEODATABASE_URL
+echo SITEURL=$SITEURL
+echo ALLOWED_HOSTS=$ALLOWED_HOSTS
+echo GEOSERVER_PUBLIC_LOCATION=$GEOSERVER_PUBLIC_LOCATION
+
+/usr/local/bin/invoke waitfordbs >> /usr/src/app/invoke.log
+
+echo "waitfordbs task done"
+
+/usr/local/bin/invoke migrations >> /usr/src/app/invoke.log
+echo "migrations task done"
+/usr/local/bin/invoke prepare >> /usr/src/app/invoke.log
+echo "prepare task done"
+/usr/local/bin/invoke fixtures >> /usr/src/app/invoke.log
+echo "fixture task done"
+
+python manage.py collectstatic --noinput -i geoexplorer >> /usr/src/app/invoke.log
+echo "collectstatic done"
 
 if [ $# -eq 1 ]; then
 	case $1 in
@@ -37,4 +57,4 @@ if [ $# -eq 1 ]; then
 fi
 
 # Run as bash entrypoint
-exec $@
+exec "$@"
