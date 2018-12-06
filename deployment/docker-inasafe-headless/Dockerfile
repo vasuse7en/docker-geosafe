@@ -44,6 +44,7 @@ RUN pip install -r /REQUIREMENTS.txt
 RUN pip install -r /REQUIREMENTS-headless.txt
 RUN pip install -r /REQUIREMENTS-realtime.txt
 # Copy ubuntu fonts
+RUN apt-get update
 RUN apt-get -y --force-yes install wget unzip
 ADD ubuntu-font-family-0.83.zip /ubuntu-font-family-0.83.zip
 RUN unzip ubuntu-font-family-0.83.zip
